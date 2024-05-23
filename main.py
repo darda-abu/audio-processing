@@ -23,16 +23,17 @@ initialize_csv(csv_path)
     
 
 
-
 for filename in os.listdir(main_directory):
     if filename.endswith(".wav"):
         print("processing", filename)
+
     y, sr = librosa.load(os.path.join(main_directory, filename))
         
     subdir = os.path.join(plot_directory, filename[:-4])
 
     if not os.path.exists(subdir):
         os.makedirs(subdir)
+        
     df = pd.read_csv(csv_path)
     if filename not in df['filename'].values:
         df.loc[len(df),'filename'] = filename

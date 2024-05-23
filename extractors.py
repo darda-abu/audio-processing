@@ -12,7 +12,7 @@ def plot_waveform(subdir, filename, y, sr):
     file_path = os.path.join(subdir, filename[:-4]+"_waveform_plot.png")
     plt.savefig(file_path)
     plt.clf()
-     
+
 
 def plot_spectogram(subdir, filename, y, sr):
     X = librosa.stft(y)
@@ -25,10 +25,8 @@ def plot_spectogram(subdir, filename, y, sr):
     plt.clf()
 
 
-
-
 def calc_mfcc(subdir, filename, y, sr, csv_path):
-    mfccs = librosa.feature.mfcc(y=y, sr=sr)
+    mfccs = librosa.feature.mfcc(y=y, sr=sr,n_mfcc=10)
     mfccs = scale(mfccs, axis=1)
     plot_func(subdir, filename, type='mfcc', S=mfccs, sr=sr, x_axis='time')
     mfccs_mean = np.mean(mfccs, axis=1)
@@ -44,8 +42,6 @@ def calc_chroma(subdir, filename, y, sr, csv_path, hop_length=512):
     update_csv(csv_path, filename, chroma_mean, 'chroma')
 
 
-
-
 def calc_spectral_contrast(subdir, filename, y, sr, csv_path):
     S = np.abs(librosa.stft(y))
     contrast = librosa.feature.spectral_contrast(S=S, sr=sr)
@@ -53,14 +49,16 @@ def calc_spectral_contrast(subdir, filename, y, sr, csv_path):
     contrast_mean = np.mean(contrast, axis=1)
     update_csv(csv_path, filename, contrast_mean,'spectral_contrast')
 
+
 def count_zero_crossing(subdir, filename, y, sr, csv_path):
     zero_crossings = librosa.zero_crossings(y,pad=False)
     df = pd.read_csv(csv_path)
     df.loc[df['filename'] == filename,  'zero_crossing'] = float(sum(zero_crossings))
     df.to_csv(csv_path, index=False)
 
+
 def calc_spectral_roll_off(subdir,filename, y, sr, csv_path):
     rool_off = librosa.feature.spectral_rolloff(y=y, sr=sr)[0]
     df = pd.read_csv(csv_path)
-    df.loc[df['filename'] == filename,  'zero_crossing'] = float(np.mean(rool_off))
+    df.loc[df['filename'] == filename,  'mean_sprectral_roll_off'] = float(np.mean(rool_off))
     df.to_csv(csv_path, index=False)
